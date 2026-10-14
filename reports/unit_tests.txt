@@ -1,0 +1,41 @@
+Command: python -m unittest discover -s tests -v
+Python: 3.13.5
+
+test_companion_file_is_also_protected (test_collector.CollectionTests.test_companion_file_is_also_protected) ... ok
+test_dns_failure_is_reported_without_secret_leak (test_collector.CollectionTests.test_dns_failure_is_reported_without_secret_leak) ... ok
+test_duplicates_and_out_of_order_not_used_for_cadence (test_collector.CollectionTests.test_duplicates_and_out_of_order_not_used_for_cadence) ... ok
+test_malformed_message_does_not_stop_batch_and_key_not_saved (test_collector.CollectionTests.test_malformed_message_does_not_stop_batch_and_key_not_saved) ... ok
+test_no_valid_rows_returns_nonzero (test_collector.CollectionTests.test_no_valid_rows_returns_nonzero) ... ok
+test_overwrite_requires_explicit_opt_in (test_collector.CollectionTests.test_overwrite_requires_explicit_opt_in) ... ok
+test_replayed_live_capture_cannot_claim_to_be_live (test_collector.CollectionTests.test_replayed_live_capture_cannot_claim_to_be_live) ... ok
+test_spreadsheet_formula_injection_is_escaped (test_collector.CollectionTests.test_spreadsheet_formula_injection_is_escaped) ... ok
+test_synthetic_batch_multi_vehicle_csv_and_cadence (test_collector.CollectionTests.test_synthetic_batch_multi_vehicle_csv_and_cadence) ... ok
+test_websocket_frames_with_multiple_trains (test_collector.CollectionTests.test_websocket_frames_with_multiple_trains) ... Connection failed: WebSocketConnectionClosedException
+ok
+test_bad_checksum_is_flagged_not_silently_discarded (test_collector.ParserTests.test_bad_checksum_is_flagged_not_silently_discarded) ... ok
+test_invalid_and_missing_time (test_collector.ParserTests.test_invalid_and_missing_time) ... ok
+test_invalid_coordinate_boundary (test_collector.ParserTests.test_invalid_coordinate_boundary) ... ok
+test_invalid_minutes (test_collector.ParserTests.test_invalid_minutes) ... ok
+test_invalid_numeric_values (test_collector.ParserTests.test_invalid_numeric_values) ... ok
+test_key_redaction (test_collector.ParserTests.test_key_redaction) ... ok
+test_leap_second (test_collector.ParserTests.test_leap_second) ... ok
+test_missing_vehicle_is_rejected (test_collector.ParserTests.test_missing_vehicle_is_rejected) ... ok
+test_naive_receipt_timestamp_is_rejected (test_collector.ParserTests.test_naive_receipt_timestamp_is_rejected) ... ok
+test_no_checksum_is_rejected (test_collector.ParserTests.test_no_checksum_is_rejected) ... ok
+test_no_service_is_allowed (test_collector.ParserTests.test_no_service_is_allowed) ... ok
+test_provider_documentation_example (test_collector.ParserTests.test_provider_documentation_example) ... ok
+test_southern_western_hemispheres (test_collector.ParserTests.test_southern_western_hemispheres) ... ok
+test_valid_fix_time_speed_latency_and_services (test_collector.ParserTests.test_valid_fix_time_speed_latency_and_services) ... ok
+test_void_fix_with_coordinates_is_still_invalid (test_collector.ParserTests.test_void_fix_with_coordinates_is_still_invalid) ... ok
+test_void_fix_without_coordinates (test_collector.ParserTests.test_void_fix_without_coordinates) ... ok
+
+----------------------------------------------------------------------
+Ran 26 tests in 0.018s
+
+OK
+1 rows; 1 valid positions; 1 vehicles -> /tmp/tmpz3evfai9/sample.csv
+1 rows; 0 valid positions; 1 vehicles -> /tmp/tmpjr0o8utk/void.csv
+0 rows; 0 valid positions; 0 vehicles -> /tmp/tmplzmfajs8/sample.csv
+0 rows; 0 valid positions; 0 vehicles -> /tmp/tmplzmfajs8/sample.csv
+1 rows; 1 valid positions; 1 vehicles -> /tmp/tmps6lctodq/sample.csv
+30 rows; 30 valid positions; 3 vehicles -> /tmp/tmpktphsu65/sample.csv

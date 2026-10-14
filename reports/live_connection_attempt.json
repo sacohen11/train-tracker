@@ -1,0 +1,8 @@
+{
+  "attempted_at_utc": "2026-10-14T08:06:23.781069+00:00",
+  "endpoint": "wss://api.oxyfi.com/trainpos/listen",
+  "connected": false,
+  "messages_received": 0,
+  "error_type": "WebSocketAddressException",
+  "dns_resolution_failed": true
+}

@@ -1,0 +1,87 @@
+name: Capture Oxyfi sample
+on:
+  workflow_dispatch:
+    inputs:
+      seconds:
+        description: Capture duration in seconds
+        required: true
+        default: '120'
+        type: choice
+        options: ['30', '120', '300', '600']
+permissions:
+  contents: read
+concurrency:
+  group: oxyfi-live-feed
+  cancel-in-progress: false
+jobs:
+  capture:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.13'
+          cache: pip
+      - run: python -m pip install -r requirements.txt
+      - name: Collect all reporting vehicles
+        env:
+          OXYFI_API_KEY: ${{ secrets.OXYFI_API_KEY }}
+          CAPTURE_SECONDS: ${{ inputs.seconds }}
+        run: |
+          python - <<'PY'
+          import os
+          import sys
+          if not os.environ.get('OXYFI_API_KEY', '').strip():
+              sys.exit('Add the OXYFI_API_KEY repository secret before running this workflow.')
+          PY
+          python collect_oxyfi.py --seconds "$CAPTURE_SECONDS" --output data/oxyfi_sample.csv
+      - name: Check artifacts for accidental key disclosure
+        id: scan
+        if: always()
+        env:
+          OXYFI_API_KEY: ${{ secrets.OXYFI_API_KEY }}
+        run: |
+          python - <<'PY'
+          import os
+          from pathlib import Path
+          key = os.environ.get('OXYFI_API_KEY', '').strip().encode()
+          paths = list(Path('data').glob('oxyfi_sample.*'))
+          leaked = False
+          for path in paths:
+              if key and key in path.read_bytes():
+                  leaked = True
+          if leaked:
+              for path in paths:
+                  path.unlink()
+              raise SystemExit('Capture files removed: secret disclosure check failed.')
+          if paths:
+              with open(os.environ['GITHUB_OUTPUT'], 'a') as stream:
+                  stream.write('safe=true\n')
+          PY
+      - name: Add batch counts to run summary
+        if: always() && steps.scan.outputs.safe == 'true'
+        run: |
+          python - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+          path = Path('data/oxyfi_sample.summary.json')
+          if path.exists():
+              report = json.loads(path.read_text())
+              with open(os.environ['GITHUB_STEP_SUMMARY'], 'a') as stream:
+                  stream.write('# Oxyfi capture\n\n')
+                  for field in ('successful_connections', 'messages_received', 'rows_written', 'valid_positions', 'unique_vehicles', 'parse_errors'):
+                      stream.write(f'{field}: {int(report.get(field, 0))}\n\n')
+          PY
+      - name: Upload CSV and diagnostics
+        if: always() && steps.scan.outputs.safe == 'true'
+        uses: actions/upload-artifact@v7
+        with:
+          name: oxyfi-sample-${{ github.run_id }}
+          path: data/oxyfi_sample.*
+          if-no-files-found: error
+          retention-days: 7

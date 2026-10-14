@@ -1,0 +1,22 @@
+{
+  "connection_attempts": 1,
+  "connection_errors": 1,
+  "endpoint": "wss://api.oxyfi.com/trainpos/listen",
+  "finished_at_utc": "2026-10-14T08:10:42.796Z",
+  "interrupted": false,
+  "invalid_positions": 0,
+  "last_connection_error": {
+    "at_utc": "2026-10-14T08:10:42.796Z",
+    "type": "WebSocketAddressException"
+  },
+  "messages_received": 0,
+  "mode": "live",
+  "parse_errors": 0,
+  "requested_duration_seconds": 30.0,
+  "rows_written": 0,
+  "started_at_utc": "2026-10-14T08:10:42.790Z",
+  "successful_connections": 0,
+  "unique_vehicles": 0,
+  "valid_positions": 0,
+  "vehicles": {}
+}

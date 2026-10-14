@@ -1,0 +1,1 @@
+capture_mode,received_at_utc,gps_time_utc,vehicle_id,vehicle_ref,public_train_numbers,internal_train_numbers,train_refs,latitude,longitude,speed_knots,speed_kmh,heading_deg,fix_status,checksum_valid,valid_position,latency_seconds,source,raw_nmea
