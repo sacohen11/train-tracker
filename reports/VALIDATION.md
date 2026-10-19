@@ -40,3 +40,35 @@ flags and per-vehicle intervals before reporting a live-data success.
 The GitHub capture workflow was authored but has not been live-validated with a
 repository secret by this initial implementation. No API key has been committed
 or stored as a GitHub secret by this implementation.
+
+## Baltic portable capture — October 19, 2026
+
+Added `baltic/` with the Latvia/Estonia bounded collector, gap summary, map
+builder, dependency pins and Mac mini handoff. Fixed output dates and Windows
+paths were replaced with CLI arguments and fresh run directories. The existing
+Sweden changes in the local working tree are outside this Baltic commit.
+
+Using Python 3.13 on Windows in a fresh virtual environment, installed
+`baltic/requirements.txt` and ran a 30-second live capture at approximately
+20:49:38–20:50:08 UTC. Latvia recorded 261 valid rows across 9 service instances
+from 67 WebSocket messages; Estonia recorded 30 valid observations across 2
+service instances from 30 polls, skipping 30 duplicates. Both summaries reported
+zero errors and complete state; the process exited successfully. Raw archives
+and CSVs were written locally under ignored `data/`, not committed. No API keys
+were required by these sources.
+
+Rebuilt the recorded-data map and gap summary from the original 17 October
+sample. The map encoded all 14,710 valid observations across 37 services. It
+uses cached OSM/OpenRailwayMap tiles and loads D3 from a CDN. No rail snapping
+or independently verified GPS accuracy is implied by this check.
+
+The existing local Oxyfi suite passed 29 tests before the Baltic changes. Baltic
+synthetic summary tests cover service/date/source separation, receipt ordering,
+repeated/backward source times and empty input. These tests do not prove live
+coverage. CLI validation also checks refusal to overwrite existing output and
+rejection of a non-positive capture duration.
+
+macOS execution, launchd installation, restart/reboot recovery, disk handling,
+rotation, backups and continuous operation remain untested and unimplemented.
+The Mac handoff explicitly lists that next stage. Reference pins were installed
+on Windows; native macOS dependency installation still needs validation there.

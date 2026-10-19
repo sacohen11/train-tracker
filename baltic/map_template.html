@@ -1,0 +1,79 @@
+<div id="baltic-ten-minute-map">
+ <h3>Latvia &amp; Estonia · Recorded train paths</h3>
+ <div class="text-small">__SUB__</div>
+ <div class="viz-controls">
+  <label class="form-check"><input id="baltic-rail" class="form-check-input" type="checkbox" checked><span class="form-check-label">Railway tracks</span></label>
+  <label class="form-label">Train <select id="baltic-train" class="form-select"><option value="">All trains</option></select></label>
+ </div>
+ <div class="viz-row text-small" aria-label="Position types">
+  <span><span class="key ee"></span>Estonia · reported</span>
+  <span><span class="key gps"></span>Latvia · GPS flag active</span>
+  <span><span class="key estimated"></span>Latvia · estimated / inactive</span>
+  <span><span class="key unknown"></span>Latvia · GPS status unknown</span>
+ </div>
+ <svg id="baltic-geo" role="img" aria-label="Recorded train paths across Latvia and Estonia over an OpenStreetMap basemap and switchable railway tracks"></svg>
+ <div id="baltic-detail" class="text-small" aria-live="polite"></div>
+ <div class="text-small">__NOTE__</div>
+ <div class="text-small"><a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">© OpenStreetMap contributors</a> · <a href="https://www.openrailwaymap.org" target="_blank" rel="noopener">OpenRailwayMap</a> · <a href="https://trainmap.vivi.lv/" target="_blank" rel="noopener">Vivi</a> · <a href="https://jbb.ghsq.de/gtfs/elron/VehiclePositions" target="_blank" rel="noopener">Elron community feed</a></div>
+</div>
+<style>
+#baltic-ten-minute-map .map-controls{display:flex;flex-wrap:wrap;gap:12px}
+#baltic-ten-minute-map svg{display:block;width:100%;margin:12px 0;touch-action:none}
+#baltic-ten-minute-map .key{display:inline-block;width:20px;margin-right:5px;vertical-align:middle;border-top:3px solid var(--viz-series-1)}
+#baltic-ten-minute-map .gps{border-color:var(--viz-series-2)}
+#baltic-ten-minute-map .estimated{border-color:var(--viz-series-3);border-top-style:dashed}
+#baltic-ten-minute-map .unknown{border-color:var(--viz-series-4);border-top-style:dotted}
+#baltic-ten-minute-map .text-small{overflow-wrap:anywhere}
+</style>
+<script src="https://cdn.jsdelivr.net/npm/d3@7.9.0/dist/d3.min.js"></script>
+<script>
+(()=>{
+ const root=document.getElementById('baltic-ten-minute-map'),data=__DATA__;
+ const select=root.querySelector('#baltic-train'),rail=root.querySelector('#baltic-rail'),detail=root.querySelector('#baltic-detail');
+ const svg=d3.select(root.querySelector('#baltic-geo'));
+ function decode(s){let i=0,x=0,y=0,a=[];function n(){let v=0,b,k=0;do{b=s.charCodeAt(i++)-63;v|=(b&31)<<k;k+=5;}while(b>=32);return(v&1)?~(v>>>1):(v>>>1);}while(i<s.length){x+=n();y+=n();a.push([x/1e6,y/1e6]);}return a;}
+ data.trains.forEach(t=>t.segments.forEach(s=>s.points=decode(s.encoded)));
+ const trains=data.trains,segments=trains.flatMap(t=>t.segments.map(s=>({...s,id:t.id}))),points=segments.flatMap(s=>s.points);
+ const color=mode=>`var(--viz-series-${mode+1})`;
+ const initial=window.openai?.widgetState?.modelContent||{};
+ let selected=trains.some(t=>t.id===initial.train)?initial.train:'',width=0,group,projection,zoom;
+ rail.checked=initial.rail!==false;
+ trains.forEach(t=>{const o=document.createElement('option');o.value=t.id;o.textContent=t.label;select.append(o);});select.value=selected;
+ const summary='Lines: recorded paths · Large dots: last reports · Scroll to zoom; drag to pan';
+ function save(){window.openai?.setWidgetState?.({modelContent:{train:selected,rail:rail.checked},privateContent:null})?.catch(()=>{});}
+ function paint(){
+  group.select('.rail').attr('display',rail.checked?null:'none');
+  group.selectAll('.trace').attr('stroke-width',d=>d.id===selected?3.5:2).attr('opacity',d=>selected&&d.id!==selected?.18:1);
+  group.selectAll('.point,.endpoint').attr('opacity',d=>selected&&d.id!==selected?.2:1);
+  const t=trains.find(t=>t.id===selected);
+  detail.textContent=t?`${t.label} · ${t.count.toLocaleString()} reports · received ${t.first}–${t.last} UTC${t.country==='LV'?` · ${t.gps.toLocaleString()} GPS-flag active`:''}`:summary;
+ }
+ function focus(){
+  const t=trains.find(t=>t.id===selected);
+  if(!t){svg.call(zoom.transform,d3.zoomIdentity);return;}
+  const pts=t.segments.flatMap(s=>s.points).map(projection),xs=pts.map(p=>p[0]),ys=pts.map(p=>p[1]),h=+svg.attr('height');
+  const k=Math.min(12,.65/Math.max((d3.max(xs)-d3.min(xs))/width,(d3.max(ys)-d3.min(ys))/h,.001));
+  const x=(d3.max(xs)+d3.min(xs))/2,y=(d3.max(ys)+d3.min(ys))/2;
+  svg.call(zoom.transform,d3.zoomIdentity.translate(width/2-k*x,h/2-k*y).scale(k));
+ }
+ function draw(){
+  const w=root.clientWidth;if(w===width||w<1)return;width=w;const h=Math.min(700,Math.max(470,w*1.05));
+  svg.attr('viewBox',`0 0 ${w} ${h}`).attr('height',h);svg.selectAll('*').remove();
+  projection=d3.geoMercator().fitExtent([[24,24],[w-24,h-24]],{type:'MultiPoint',coordinates:points});
+  const geo=d3.geoPath(projection),m=data.meta,nw=projection([m.west,m.north]),se=projection([m.east,m.south]);
+  group=svg.append('g');
+  ['base','rail'].forEach(layer=>group.append('image').attr('class',layer).attr('href',data.images[layer]).attr('x',nw[0]).attr('y',nw[1]).attr('width',se[0]-nw[0]).attr('height',se[1]-nw[1]));
+  group.selectAll('.trace').data(segments.filter(s=>s.points.length>1)).join('path').attr('class','trace').attr('d',s=>geo({type:'LineString',coordinates:s.points})).attr('fill','none').attr('stroke',s=>color(s.mode)).attr('stroke-dasharray',s=>s.mode===2?'5 4':null).attr('stroke-linejoin','round').attr('vector-effect','non-scaling-stroke');
+  const isolated=segments.filter(s=>s.points.length===1).map(s=>({id:s.id,mode:s.mode,p:s.points[0]}));
+  group.selectAll('.point').data(isolated).join('circle').attr('class','point').attr('cx',s=>projection(s.p)[0]).attr('cy',s=>projection(s.p)[1]).attr('r',1.8).attr('fill',s=>color(s.mode));
+  const ends=trains.map(t=>({id:t.id,label:t.label,mode:t.segments.at(-1).mode,p:t.segments.at(-1).points.at(-1),last:t.last}));
+  group.selectAll('.endpoint').data(ends).join('circle').attr('class','endpoint').attr('cx',s=>projection(s.p)[0]).attr('cy',s=>projection(s.p)[1]).attr('r',4).attr('fill',s=>color(s.mode)).attr('stroke','var(--background)').attr('stroke-width',1).attr('vector-effect','non-scaling-stroke').attr('data-tooltip',s=>`${s.label} · last received ${s.last} UTC`);
+  group.selectAll('.hit').data(ends).join('circle').attr('class','hit cursor-interaction').attr('cx',s=>projection(s.p)[0]).attr('cy',s=>projection(s.p)[1]).attr('r',15).attr('fill','transparent').on('click',(e,t)=>{selected=t.id;select.value=selected;paint();save();});
+  zoom=d3.zoom().scaleExtent([1,16]).extent([[0,0],[w,h]]).on('zoom',e=>{group.attr('transform',e.transform);group.selectAll('.endpoint').attr('r',4/e.transform.k);group.selectAll('.point').attr('r',1.8/e.transform.k);group.selectAll('.hit').attr('r',15/e.transform.k);});
+  svg.call(zoom);paint();focus();
+ }
+ select.onchange=()=>{selected=select.value;paint();focus();save();};rail.onchange=()=>{paint();save();};
+ new ResizeObserver(draw).observe(root);draw();
+ window.addEventListener('openai:set_globals',e=>{const s=e.detail?.globals?.widgetState?.modelContent;if(!s)return;selected=trains.some(t=>t.id===s.train)?s.train:'';select.value=selected;rail.checked=s.rail!==false;paint();focus();});
+})();
+</script>

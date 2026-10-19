@@ -1,0 +1,7 @@
+# Versions used successfully by the Windows ten-minute reference collector.
+# Install in a new Mac-native Python virtual environment; validate there.
+# These are reference pins, not a claim of a completed Mac deployment.
+websockets==16.0
+gtfs-realtime-bindings==3.0.0
+protobuf==7.36.2
+Pillow==12.2.0
