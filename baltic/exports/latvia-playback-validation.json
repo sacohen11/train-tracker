@@ -1,0 +1,85 @@
+{
+  "artifact": "latvia-recorded-playback.html",
+  "artifact_bytes": 988680,
+  "artifact_sha256": "b355b46215865572ec6af22fe02a6fe6a696f81be1aa4e1f09a9f00e80c5e802",
+  "checked_at_utc": "2026-10-29T10:34:08.175631+00:00",
+  "tested_as": "standalone HTML opened from disk in Chromium",
+  "timestamp_audit": {
+    "files": [
+      {
+        "date": "2026-10-26",
+        "rows": 985805,
+        "blank_receipt_times": 0,
+        "invalid_receipt_times": 0,
+        "backwards_receipt_steps": 0,
+        "outside_filename_day": 0,
+        "receipt_gaps_over_15s": 53,
+        "first_receipt_utc": "2026-10-26T09:05:05.110318+00:00",
+        "last_receipt_utc": "2026-10-26T22:59:59.173531+00:00",
+        "source_sha256": "12b1accf575ae97ee3b8592e05d89114e6339cc278766eca21fc08e54d03f843",
+        "playback_reports": 41329,
+        "playback_services": 25,
+        "playback_start": "2026-10-26T09:00:00+00:00",
+        "playback_end": "2026-10-26T10:00:00+00:00"
+      },
+      {
+        "date": "2026-10-27",
+        "rows": 1486429,
+        "blank_receipt_times": 0,
+        "invalid_receipt_times": 0,
+        "backwards_receipt_steps": 0,
+        "outside_filename_day": 0,
+        "receipt_gaps_over_15s": 66,
+        "first_receipt_utc": "2026-10-26T23:00:00.138048+00:00",
+        "last_receipt_utc": "2026-10-27T22:59:59.334191+00:00",
+        "source_sha256": "0c18e61b8eea17bebc27e68f38d4243ec0e67670a4f5aae668dc0fd0caba806b",
+        "playback_reports": 47417,
+        "playback_services": 27,
+        "playback_start": "2026-10-27T09:00:00+00:00",
+        "playback_end": "2026-10-27T10:00:00+00:00"
+      }
+    ],
+    "source_files_changed": false,
+    "playback_sampling": "all original reports in 09:00\u201310:00 UTC on each day",
+    "coordinate_interpolation": false,
+    "embedded_data_bytes": 684050
+  },
+  "browser_checks": {
+    "snapshot": {
+      "period": "2026-10-27 \u00b7 09:00\u201310:00 UTC \u00b7 47,417 original reports \u00b7 27 services",
+      "active": 14,
+      "rails": 278,
+      "places": [
+        "Riga",
+        "Klaip\u0117da",
+        "\u0160iauliai",
+        "Panevezys",
+        "Daugavpils",
+        "Liep\u0101ja",
+        "Jelgava",
+        "Ventspils",
+        "R\u0113zekne"
+      ],
+      "invalidPaths": 0
+    },
+    "cases": 15,
+    "markerComparisons": 152,
+    "playbackAdvancedSeconds": 199.98,
+    "mobile": {
+      "width": 318,
+      "scrollWidth": 318
+    },
+    "checks": [
+      "all expected markers and exact receipt microseconds",
+      "original coordinates",
+      "source timestamps",
+      "no markers during data gaps",
+      "day switch",
+      "train selection",
+      "play/pause and moving positions",
+      "mobile layout",
+      "dark mode"
+    ],
+    "pageErrors": []
+  }
+}

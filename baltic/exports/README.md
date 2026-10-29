@@ -15,6 +15,28 @@ The ZIPs total 16.47 MB instead of 57.11 MB: **71.16% smaller**. Sizes use
 decimal MB. An overnight service can appear in both files, so the service
 counts should not be added to obtain a unique two-day count.
 
+## Recorded playback
+
+[Download the playback HTML](latvia-recorded-playback.html), using GitHub's
+**Download raw file** button, then open it in a browser. It includes play/pause,
+a time slider, playback speed, date selection and train selection.
+
+The replay covers **09:00–10:00 UTC on 26 and 27 October 2026**, containing all
+41,329 and 47,417 reports from those windows respectively. It does not replay
+the entire two days. Receipt timestamps drive the clock; marker positions
+come from actual reports without interpolation. Markers disappear after
+15 seconds without a report. Five-minute trails break at receipt gaps and
+GPS-status changes. Select a train to see its exact receipt and source times.
+
+The recorded data and generalized Natural Earth railway geography are
+embedded in the file. An internet connection loads the pinned D3 library;
+the playback makes no requests to live train feeds. Original CSVs are unchanged.
+
+[Playback validation](latvia-playback-validation.json) includes the complete
+timestamp audit of both CSVs and browser checks against their original values:
+15 playback cases, 152 marker comparisons, exact receipt microseconds,
+coordinates and source times, plus controls, gaps and responsive layout.
+
 ## Correction from the first map export
 
 The earlier `-map.zip` files removed intermediate stationary reports,
